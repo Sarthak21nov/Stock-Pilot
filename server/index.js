@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import AuthRouter from '../server/Routes/AuthRouter.js'
 import AdminRouter from '../server/Routes/AdminRouter.js'
 import OrderRouter from '../server/Routes/OrderRouter.js'
+import AdminRoutes from '../server/Routes/AdminRoutes.js'
 
 dotenv.config()
 
@@ -35,6 +36,7 @@ server.use(express.json())
 server.use('/api/auth', AuthRouter)
 server.use('/api/admin', AdminRouter)
 server.use('/api/order', OrderRouter)
+server.use('/api/manipulation', AdminRoutes)
 
 server.listen(PORT, ()=>{
     connect()

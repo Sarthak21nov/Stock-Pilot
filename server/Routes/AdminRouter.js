@@ -9,8 +9,8 @@ const router = express.Router()
 // Inventory Routers
 router.post('/addProduct', AdminProtect, addProductInInventory)
 router.put('/updateProduct', UpdateProductInInventory)
-router.delete('/deleteProduct/:productName', AdminProtect, deleteProductInInventory)
 router.get('/getProducts', getProductsInInventory)
+router.delete('/deleteProduct/:productName', AdminProtect, deleteProductInInventory)
 
 // Supplier Routers
 router.post('/addSupplier', AdminProtect, AddSupplier)
