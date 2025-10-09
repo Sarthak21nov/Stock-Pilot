@@ -22,12 +22,18 @@ const connect = async ()=>{
         throw(err)
     }
 }
+
 mongoose.connection.on("disconnected", ()=>{
     console.log("Disconnected from DB")
 })
 
 // Middleware
-server.use(cors())
+const corsOptions = {
+  origin: 'http://localhost:5173', 
+  credentials: true
+};
+
+server.use(cors(corsOptions));
 server.use(cookieParser())
 server.use(express.json())
 

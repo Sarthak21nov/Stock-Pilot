@@ -3,70 +3,112 @@ import Inventory from "../Models/InventoryModel.js"
 import Order from "../Models/OrderModel.js"
 
 export const reqestOrder = async (req, res) => {
-    try {
-        const { customerId, productName, OrderQuantity, DiscountPercentage } = req.body;
+  try {
+    const { ConsumerName, Products } = req.body;
 
-        // Validate customer
-        const customer = await Customer.findById(customerId);
-        if (!customer) return res.status(404).json({ success: false, message: "Customer not found" });
+    // Validate customer
+    const customer = await Customer.findOne({ ConsumerName });
+    if (!customer)
+      return res.status(404).json({ success: false, message: "Customer not found" });
 
-        // Validate product
-        const product = await Inventory.findOne({ productName });
-        if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    const orders = [];
 
-        if (product.productQuantity < OrderQuantity) {
-            return res.status(400).json({ success: false, message: "Insufficient stock" });
-        }
+    for (const item of Products) {
+      const { productName, productQuantity, discountPercentage } = item;
 
-        // Select tier pricing
-        let unitCost = 0;
-        if (customer.ConsumerType === "Wholesaler") unitCost = product.productCost_Wholesale;
-        else if (customer.ConsumerType === "Retailer") unitCost = product.productCost_Retail;
-        else if (customer.ConsumerType === "Distributer") unitCost = product.productCost_Distributer;
+      // Validate product
+      const product = await Inventory.findOne({ productName });
+      if (!product)
+        return res.status(404).json({ success: false, message: `Product '${productName}' not found` });
 
-        const TotalCost = unitCost * OrderQuantity;
-        const NetCost = TotalCost - (TotalCost * (DiscountPercentage / 100));
-
-        // Create order
-        const order = await Order.create({
-            OrderName: product.productName,
-            ProductCost: unitCost,
-            OrderQuantity,
-            OrderBy: customer.ConsumerName,
-            CustomerId: customer._id,
-            TotalCost,
-            DiscountPercentage,
-            NetCost,
+      if (product.productQuantity < productQuantity)
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient stock for ${productName}`,
         });
 
-        // Update inventory stock
-        product.productQuantity -= OrderQuantity;
-        await product.save();
+      // Select tier pricing
+      let unitCost = 0;
+      if (customer.ConsumerType === "Wholesaler") unitCost = product.productCost_Wholesale;
+      else if (customer.ConsumerType === "Retailer") unitCost = product.productCost_Retail;
+      else if (customer.ConsumerType === "Distributer") unitCost = product.productCost_Distributer;
 
-        // Update customer's order count
-        customer.OrdersMade += 1;
-        await customer.save();
+      const TotalCost = unitCost * productQuantity;
+      const NetCost = TotalCost - (TotalCost * (discountPercentage / 100));
 
-        res.status(201).json({ success: true, message: "Order placed successfully", order });
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Error placing order", error: err.message });
+      // Create order
+      const order = await Order.create({
+        OrderName: product.productName,
+        ProductCost: unitCost,
+        OrderQuantity: productQuantity,
+        OrderBy: customer.ConsumerName,
+        CustomerId: customer._id,
+        TotalCost,
+        DiscountPercentage: discountPercentage,
+        NetCost,
+      });
+
+      // Update inventory
+      product.productQuantity -= productQuantity;
+      await product.save();
+
+      orders.push(order);
     }
+
+    // Update customer's order count
+    customer.OrdersMade += Products.length;
+    await customer.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Orders placed successfully",
+      orders,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error placing order",
+      error: err.message,
+    });
+  }
 };
 
 export const UpdateOrderStatus = async (req, res) => {
-    try {
-        const { orderId, status } = req.body;
+  try {
+    const { id } = req.params; 
+    const { status } = req.body; 
 
-        const order = await Order.findById(orderId);
-        if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-
-        order.OrderStatus = status;
-        await order.save();
-
-        res.json({ success: true, message: "Order status updated successfully", order });
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Error updating order status", error: err.message });
+    if (!id || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "Order ID and status are required",
+      });
     }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    order.OrderStatus = status;
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      order,
+    });
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error updating order status",
+      error: err.message,
+    });
+  }
 };
 
 export const DeleteOrder = async (req,res)=>{

@@ -45,7 +45,7 @@ const OrderSchema = new mongoose.Schema({
         enum: ['Placed', 'Preparing For Transit', 'Dispatched', 'Delivered', 'Cannot be processed'],
         default: 'Placed'
     }
-});
+}, { timestamps: true});
 
 const Order = mongoose.model("Order", OrderSchema);
 

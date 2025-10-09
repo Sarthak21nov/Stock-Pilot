@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post('/RequestOrder', SalesProtect, reqestOrder)  
 router.get('/getAllOrders', getAllOrder)
-router.put('/updateStatus', WarehouseProtect, UpdateOrderStatus)  
+router.put('/updateStatus/:id', WarehouseProtect, UpdateOrderStatus)  
 router.delete('/deleteOrder/:id', DeleteOrder)
 router.put('/updateData', UpdateData)
 
