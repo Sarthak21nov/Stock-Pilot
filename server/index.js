@@ -30,7 +30,7 @@ mongoose.connection.on("disconnected", ()=>{
 // Middleware
 const corsOptions = {
   // origin: 'http://localhost:5173', 
-  origin: 'https://stock-pilot-rho.vercel.app/',  
+  origin: 'https://stock-pilot-rho.vercel.app',  
   credentials: true
 };
 
