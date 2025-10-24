@@ -46,7 +46,7 @@ const Login = () => {
 
   return (
     <div className='overflow-y-auto'>
-      <p className=' bg-blue-500 text-white p-5'>Hey Folks! Thanks for visiting the website. This is just the first version of the website, hence you are requested to visit the <a href='https://stock-pilot-2.onrender.com/api/order/getAllOrders' className='text-red-400'>Backend Url</a> to start the server and seamlessly use the service. The server usually takes 45-50 seconds to restart. Thanks for cooperating.</p>
+      <p className=' bg-blue-500 text-white p-5'>Hey Folks! Thanks for visiting the website. This is just the first version of the website. This is a SaaS - Which has been created for the purpose of learning and demonstration. Below are the testing credentials for the website. <br /> AdminEmail: saru@email.com <br /> SalesEmail: sales@email.com <br /> WarehouseEmail: warehouse@email.com <br /> Password: 1234567890 "Password is same for all the testing emails. Thank you for your cooperation."</p>
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md md:translate-y-[-15%] translate-y-[-30%]">
         <div className="text-center mb-8">
