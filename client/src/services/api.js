@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://stock-pilot-2.onrender.com';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://stock-pilot-nine.vercel.app/';
 
 // const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
