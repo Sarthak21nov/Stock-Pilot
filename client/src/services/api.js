@@ -1,7 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://stock-pilot-nine.vercel.app';
 
-// const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
 class ApiService {
   async request(endpoint, options = {}) {
     const config = {
@@ -10,21 +8,25 @@ class ApiService {
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      credentials: 'include',
+      credentials: 'include', // ✅ ensures cookies/tokens are sent
     };
 
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, config);
       const data = await response.json();
 
+      if (!response.ok) {
+        console.error(`API Error (${response.status}):`, data);
+      }
+
       if (response.status === 401) {
         localStorage.removeItem('userRole');
         window.location.href = '/login';
-        throw new Error('Session expired. Please login again.');
       }
 
       return { ...data, status: response.status };
     } catch (error) {
+      console.error("Fetch error:", error);
       throw error;
     }
   }
