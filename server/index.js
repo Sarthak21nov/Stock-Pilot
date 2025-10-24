@@ -28,17 +28,31 @@ mongoose.connection.on("disconnected", ()=>{
 })
 
 // Middleware
-// const corsOptions = {
-//   // origin: 'http://localhost:5173', 
-//   origin: ['https://stock-pilot-4oj8.vercel.app','https://main.d3sgipjjeevgzg.amplifyapp.com', 'http://localhost:5173'], 
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true
-// };
-
-// server.use(cors(corsOptions));
-server.use(cors())
-//server.options('*', cors(corsOptions));
+const corsOptions = {
+    origin: function(origin, callback) {
+      const allowedOrigins = [
+        'https://stock-pilot-4oj8.vercel.app',
+        'https://main.d3sgipjjeevgzg.amplifyapp.com',
+        'http://localhost:5173'
+      ];
+      
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  };
+  
+  server.use(cors(corsOptions));
+  server.options('*', cors(corsOptions));
+  
 
 server.use(cookieParser())
 server.use(express.json())

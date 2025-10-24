@@ -8,12 +8,22 @@ class ApiService {
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      credentials: 'include', // ✅ ensures cookies/tokens are sent
+      credentials: 'include', // ✅ Already correct
     };
 
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, config);
-      const data = await response.json();
+      
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get("content-type");
+      let data;
+      
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        // Handle non-JSON responses (e.g., CORS errors)
+        data = { message: 'Server error or CORS issue' };
+      }
 
       if (!response.ok) {
         console.error(`API Error (${response.status}):`, data);
@@ -27,6 +37,10 @@ class ApiService {
       return { ...data, status: response.status };
     } catch (error) {
       console.error("Fetch error:", error);
+      // More descriptive CORS error message
+      if (error.message === 'Failed to fetch') {
+        console.error('Possible CORS issue or network error');
+      }
       throw error;
     }
   }
