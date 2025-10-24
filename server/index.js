@@ -50,7 +50,17 @@ server.use('/api/admin', AdminRouter)
 server.use('/api/order', OrderRouter)
 server.use('/api/manipulation', AdminRoutes)
 
-server.listen(PORT, ()=>{
-    connect()
-    console.log(`Server Running on Port ${PORT}`)
-})
+// server.listen(PORT, ()=>{
+//     connect()
+//     console.log(`Server Running on Port ${PORT}`)
+// })
+
+if (process.env.NODE_ENV !== "production") {
+    server.listen(PORT, () => {
+      connect();
+      console.log(`Server running on port ${PORT}`);
+    });
+}
+
+
+export default server;
